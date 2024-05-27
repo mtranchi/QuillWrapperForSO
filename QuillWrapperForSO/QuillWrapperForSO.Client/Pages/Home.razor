@@ -1,0 +1,38 @@
+﻿@page "/"
+@using QuillWrapperForSO.Client.Components
+
+<PageTitle>Home</PageTitle>
+
+@if (person != null)
+{
+    <EditForm Model="person" OnValidSubmit="onValidSubmit">
+        <InputRichTextEditorDotnet DisplayName="Hello, Dolly?" @bind-Value="person.Fubar" />
+
+        <p>
+            Fubar: @person.Fubar
+        </p>
+
+        <InputRichTextEditorQuill DisplayName="Status?" @bind-Value="person.Baz" />
+        <p>
+            Baz: @person.Baz
+        </p>
+
+        <input type="submit" />
+    </EditForm>
+}
+
+@code {
+
+    public class Person
+    {
+        public string Fubar { get; set; }
+        public string Baz { get; set; }
+    }
+
+    Person person = new() { Fubar = "<h1>Hello Dolly!</h1>", Baz = "<p>How ye be?</p>" };
+
+    void onValidSubmit()
+    {
+
+    }
+}

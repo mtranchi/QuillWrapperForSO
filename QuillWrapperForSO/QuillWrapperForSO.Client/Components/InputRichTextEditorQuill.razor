@@ -1,0 +1,40 @@
+﻿@inherits InputBase<string>
+@inject IJSRuntime JSRuntime
+
+<div class="mb-3">
+    <label class="form-label">@DisplayName</label>
+    <div @ref="editor" contenteditable>
+        @((MarkupString)CurrentValue)
+    </div>
+</div>
+
+@code {
+    ElementReference editor;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var lDotNetReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("setDotnetReference", lDotNetReference);
+
+            await JSRuntime.InvokeVoidAsync("initQuill", editor);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable]
+    public void QuillCalled(string html)
+    {
+        Console.WriteLine("HTML FROM Razor QuillCalled(): " + html);
+
+        CurrentValue = html;
+    }
+
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

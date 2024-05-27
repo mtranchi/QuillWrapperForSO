@@ -1,0 +1,40 @@
+﻿@inherits InputBase<string>
+@inject IJSRuntime JSRuntime
+
+<div class="mb-3">
+    <label class="form-label">@DisplayName</label>
+    <div @ref="editor" @onfocusout="onBlur" tabindex="-1">
+        @((MarkupString)CurrentValue)
+    </div>
+</div>
+
+@code {
+    ElementReference editor;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initQuill", editor);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async Task onBlur()
+    {
+        var quillResult = await JSRuntime.InvokeAsync<string>("getHtml");
+
+        //gets the html just fine
+        Console.WriteLine(quillResult);
+
+        //this throws the exception
+        CurrentValue = quillResult;
+    }
+
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}
